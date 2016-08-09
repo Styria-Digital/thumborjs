@@ -13,9 +13,6 @@ const consts    = {
     LEFT   : 'left',
 };
 
-// export class
-module.exports  = ThumborJS;
-
 /**
  * returns whether given input a non-empty string
  *
@@ -32,7 +29,16 @@ function initSeckey(seckey)
     if (!validString(seckey))
         return null;
 
-    return Object.getOwnPropertySymbols(keys).reduce((pv, sym) => pv || (keys[sym] === seckey ? sym : null), null) || Symbol();
+    const existing_key  = Object.getOwnPropertySymbols(keys).reduce((pv, sym) => pv || (keys[sym] === seckey ? sym : null), null);
+
+    if (existing_key)
+        return existing_key;
+
+    const new_key       = Symbol();
+
+    keys[ new_key ] = seckey;
+
+    return new_key;
 }
 
 function getSeckey(prop)
@@ -42,14 +48,14 @@ function getSeckey(prop)
 
 
 /**
- * Build operation array, must be bound to instance of Thumbor
+ * Build operation path, must be bound to instance of Thumbor
  *
  * @return {Array}
  */
-function urlParts()
+function getOperationPath(reset)
 {
     if (!this.imagePath)
-        throw new Error('The image url can\'t be null or empty.');
+        throw new Error('The image url can\'t be null or empty (call `imgpath()` first).');
 
     const parts = [];
 
@@ -104,7 +110,10 @@ function urlParts()
 
     parts.push(this.imagePath);
 
-    return parts;
+    if (reset)
+        this.reset();
+
+    return parts.join('/');
 }
 
 class ThumborJS
@@ -150,7 +159,7 @@ class ThumborJS
     *
     * @param {String} imagePath
     */
-    setImagePath(imagePath, reset)
+    imgpath(imagePath, reset)
     {
         if (reset)
             this.reset();
@@ -158,21 +167,6 @@ class ThumborJS
         this.imagePath = (imagePath.charAt(0) === '/') ? imagePath.substring(1, imagePath.length) : imagePath;
 
         return this;
-    }
-
-    /**
-     * Converts operation array to string
-     *
-     * @return {String}
-     */
-    getOperationPath(reset)
-    {
-        const parts = urlParts.call(this);
-
-        if (reset)
-            this.reset();
-
-        return parts.join('/');
     }
 
     /**
@@ -198,7 +192,7 @@ class ThumborJS
     /**
      * turn on smart-crop
      */
-    smartCrop(smartCrop)
+    smartcrop(smartCrop)
     {
         this.smart = smartCrop;
 
@@ -212,7 +206,7 @@ class ThumborJS
      * @param  {String} width
      * @param  {String} height
      */
-    fitIn(width, height)
+    fitin(width, height)
     {
         this.fitInFlag = true;
 
@@ -222,7 +216,7 @@ class ThumborJS
     /**
      * Flip image horizontally
      */
-    flipHorizontally()
+    hflip()
     {
         this.withFlipHorizontally = true;
 
@@ -232,7 +226,7 @@ class ThumborJS
     /**
      * Flip image vertically
      */
-    flipVertically()
+    vflip()
     {
         this.withFlipVertically = true;
 
@@ -278,11 +272,11 @@ class ThumborJS
     /**
      * Specify that JSON metadata should be returned instead of the thumbnailed image.
      *
-     * @param  {Boolean} metaDataOnly
+     * @param  {Boolean} metaData
      */
-    metaDataOnly(metaDataOnly)
+    metadata(metaData)
     {
-        this.meta = !!metaDataOnly;
+        this.meta = !!metaData;
 
         return this;
     }
@@ -321,18 +315,65 @@ class ThumborJS
     }
 
     /**
-     * Combine image url and operations with secure and unsecure (unsafe) paths
+     * generate and return the "operation path" based on the "operation" settings currently defined in this ThumborJS instance
+     *
+     * N.B. this function is primarily for testing purposes - it allows for taking the "operation path" and
+     *      performing the encryption with Thumbor's own python module ... thereby allowing for verfication of
+     *      the generated security hash
      *
      * @return {String}
+     * @throws {Error}      - thrown if an "image path" is not currently set
      */
-    buildUrl(skipreset)
+    getpath()
     {
-        const operation = this.getOperationPath(!skipreset);
-        const keypart   = this.seckeyProp
-                        ? crypto.createHmac('sha1', getSeckey(this.seckeyProp)).update(operation).digest('base64')
-                        : 'unsafe'
-                        ;
+        return getOperationPath.call(this);
+    }
 
-        return this.serverUrl + '/' + keypart + '/' + operation;
+    /**
+     * generate and return the encryption hash part of a thumbor URL,
+     * based on the "operation" settings currently defined in this ThumborJS instance,
+     * or the explicit `operation` string (if given)
+     *
+     * @param  {String} operation       - optional, will auto-generate it if not supplied
+     * @return {String}
+     */
+    gethash(operation)
+    {
+        if (!this.seckeyProp)
+            return 'unsafe'; // no security key set
+
+        return crypto.createHmac('sha1', getSeckey(this.seckeyProp))
+                     .update(operation || this.getpath())
+                     .digest('base64')
+                     .replace(/\+/g, '-')
+                     .replace(/\//g, '_')
+                     ;
+
+    }
+
+    /**
+     * generate a thumbor image url
+     *
+     * @param  {Boolean} skip_reset     - optional, pass TRUE to skip resetting of objects internal state (after generation of "operation path")
+     * @param  {Boolean} skip_serverurl - optional, pass TRUE to skip prefixing of generated URL with "server url"
+     * @return {String}
+     * @throws {Error}                  - thrown if an "image path" is not currently set
+     */
+    genurl(skip_reset, skip_serverurl)
+    {
+        const operation = getOperationPath.call(this, !skip_reset);
+
+        return (skip_serverurl ? '' : this.serverUrl) + '/' + this.gethash(operation) + '/' + operation;
     }
 };
+
+// expose "class constants"
+Object.keys(consts).forEach(k => Object.defineProperty(ThumborJS, k, {
+    configurable : false,
+    writable     : false,
+    value        : consts[k],
+
+}));
+
+// export class
+module.exports  = ThumborJS;
