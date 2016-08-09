@@ -1,37 +1,50 @@
 {
-	"name": "thumbor",
-	"version": "0.2.0",
-	"main": "index.js",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/OOShoppingnl/thumborjs"
+  "name": "thumbor",
+  "version": "0.2.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OOShoppingnl/thumborjs"
+  },
+  "bugs": {
+    "url": "https://github.com/OOShoppingnl/thumborjs/issues"
+  },
+  "author": "<tech@ooshopping.nl>",
+  "contributors": [
+    {
+      "name": "David Caramelo",
+      "url": "fr.viadeo.com/fr/profile/david.caramelo1"
     },
-    "bugs": {
-      "url": "https://github.com/OOShoppingnl/thumborjs/issues"
-    },
-    "author" : "<tech@ooshopping.nl>",
-	"contributors": [{
-		"name": "David Caramelo",
-		"url" : "fr.viadeo.com/fr/profile/david.caramelo1"
-	},{
-		"name": "PolicyMic",
-		"url" : "http://policymic.com"
-	}],
-    "engines": {
-        "node": "6.x"
-    },
-    "scripts": {
-        "test": "echo 'not implemented yet.'",
-        "lint": "eslint index.js"
-    },
-    "devDependencies": {
-        "eslint": "3.2.2",
-        "eslint-config-standard": "5.3.5",
-        "eslint-plugin-promise": "2.0.0",
-        "eslint-plugin-standard": "2.0.0"
-    },
-    "keywords" : [ "imageurl", "thumbor" ],
-	"readme": "ES2015-style Thumbor URL generator for Node JS",
-	"readmeFilename": "README.md",
-	"license": "MIT"
+    {
+      "name": "PolicyMic",
+      "url": "http://policymic.com"
+    }
+  ],
+  "engines": {
+    "node": "6.x"
+  },
+  "scripts": {
+    "watch": "nodemon -q -x 'npm test-hashing'",
+    "lint": "eslint index.js",
+    "test": "npm run lint && tape test/basic.js | faucet",
+    "test-hashing": "npm run lint && tape test/basic.js test/hashing.js | faucet",
+    "test-requests": "npm run lint && tape test/basic.js test/requests.js | faucet",
+    "test-full": "npm run lint && tape test/basic.js test/hashing.js test/requests.js | faucet"
+  },
+  "devDependencies": {
+    "blue-tape": "0.2.0",
+    "eslint": "3.2.2",
+    "eslint-config-standard": "5.3.5",
+    "eslint-plugin-promise": "2.0.0",
+    "eslint-plugin-standard": "2.0.0",
+    "faucet": "0.0.1",
+    "nodemon": "1.10.0"
+  },
+  "keywords": [
+    "imageurl",
+    "thumbor"
+  ],
+  "readme": "ES2015-style Thumbor URL generator for Node JS",
+  "readmeFilename": "README.md",
+  "license": "MIT"
 }
