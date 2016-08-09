@@ -13,6 +13,28 @@ a refactor of the following projects (with thanks to them!) ...
 ```sh
 npm install thumbor
 ```
+
+## Testing
+
+You can run a basic set of tests (and linting) with:
+```
+npm test
+```
+
+You can run tests to validate the hash generation with:
+```
+npm run test-hashing
+```
+> N.B. these require Python & Thumbor be [installed locally](http://thumbor.readthedocs.io/en/latest/installing.html)
+
+
+You can run tests against a running instance of Thumbor with:
+```
+npm run test-requests
+```
+> N.B. by default the requests will be performed against "**http://localhost:8888**", you can change this by setting the env-var `THUMBOR_URL`
+
+
 ## Usage
 
 ```javascript
