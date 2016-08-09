@@ -1,16 +1,34 @@
 {
 	"name": "thumbor",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"main": "index.js",
-	"repository": {
-	  "type": "git",
-	  "url": "https://github.com/policymic/thumbor.git"
-	},
-	"author": {
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/OOShoppingnl/thumborjs"
+    },
+    "bugs": {
+      "url": "https://github.com/OOShoppingnl/thumborjs/issues"
+    },
+    "author" : "<tech@ooshopping.nl>",
+	"contributors": [{
 		"name": "PolicyMic",
 		"url" : "http://policymic.com"
-	},
-	"readme": "Client Thumbor for Node JS",
+	}],
+    "engines": {
+        "node": "6.x"
+    },
+    "scripts": {
+        "test": "echo 'not implemented yet.'",
+        "lint": "eslint index.js"
+    },
+    "devDependencies": {
+        "eslint": "3.2.2",
+        "eslint-config-standard": "5.3.5",
+        "eslint-plugin-promise": "2.0.0",
+        "eslint-plugin-standard": "2.0.0"
+    },
+    "keywords" : [ "imageurl", "thumbor" ],
+	"readme": "ES2015-style Thumbor URL generator for Node JS",
 	"readmeFilename": "README.md",
 	"license": "MIT"
 }
