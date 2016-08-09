@@ -8,13 +8,12 @@ a refactor of the following projects (with thanks to them!) ...
  - https://github.com/dcaramelo/ThumborUrlBuilder
  - https://github.com/rafaelcaricio/ThumborJS
 
-## Usage
+## Install <em>(requires [npm](https://docs.npmjs.com/getting-started/what-is-npm))</em>
 
 ```sh
-# Install thumbor module
-
 npm install thumbor
 ```
+## Usage
 
 ```javascript
 const ThumborJS = require('thumborjs');
