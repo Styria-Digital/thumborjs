@@ -1,12 +1,10 @@
 # ThumborUrlBuilder
 
-Thumbor client for Node JS
+ES2015-style Thumbor URL generator for Node JS
 
-Combination of
-- https://github.com/dcaramelo/ThumborUrlBuilder crypt implementation
-- https://github.com/rafaelcaricio/ThumborJS build command set
-
-Neither of these repos are updating anymore so we are maintaining our own
+a refactor of the following projects (with thanks to them!)
+    - https://github.com/dcaramelo/ThumborUrlBuilder
+    - https://github.com/rafaelcaricio/ThumborJS
 
 ## Usage
 
@@ -17,13 +15,16 @@ npm install thumbor
 ```
 
 ```javascript
-// Declare thumbor-url-builder in JS
-// Your encryption key is not required, but your link will be unsafe.
 
-var Thumbor = require('thumbor');
-var thumbor  = new Thumbor('MY_KEY', 'http://myserver.thumbor.com');
+const ThumborJS = require('thumborjs');
 
-// Generate your url :
+// Your encryption key may be NULL, but if so your links will be unsafe.
+const myKey     = 'MY_KEY'; 
 
-var thumborUrl = thumbor.setImagePath('00223lsvrnzeaf42.png').resize(50,50).buildUrl();
+// init url generator
+const tugen     = new ThumborJS('http://localhost:8888', myKey);
+
+// generate a url
+
+const url       = tugen.setImagePath('foobar.png').resize(50,50).buildUrl();
 ```
