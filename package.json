@@ -20,9 +20,6 @@
       "url": "http://policymic.com"
     }
   ],
-  "engines": {
-    "node": "6.x"
-  },
   "scripts": {
     "watch": "nodemon -q -x 'npm test-hashing'",
     "lint": "eslint index.js",
