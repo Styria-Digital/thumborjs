@@ -253,9 +253,10 @@ Thumbor.prototype = {
     var operation = this.getOperationPath();
 
     if (this.THUMBOR_SECURITY_KEY) {
+      var cryptoObj = window.crypto || window.msCrypto; // for IE 11
       var enc = new TextEncoder("utf-8");
 
-      var cryptoKey = await window.crypto.subtle.importKey(
+      var cryptoKey = await cryptoObj.subtle.importKey(
         "raw",
         enc.encode(this.THUMBOR_SECURITY_KEY),
         {
@@ -265,7 +266,7 @@ Thumbor.prototype = {
         false,
         ["sign", "verify"]
       );
-      var signature = await window.crypto.subtle.sign(
+      var signature = await cryptoObj.subtle.sign(
         "HMAC",
         cryptoKey,
         enc.encode(operation + this.imagePath)
